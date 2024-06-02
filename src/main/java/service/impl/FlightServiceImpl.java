@@ -3,6 +3,7 @@ package service.impl;
 import dao.entity.FlightEntity;
 import dao.repository.FlightRepository;
 import exceptions.FlightNotFoundException;
+import exceptions.NullBookingIdException;
 import exceptions.NullFlightException;
 import exceptions.NullFlightIdException;
 import mapper.FlightMapper;
@@ -36,7 +37,7 @@ public class FlightServiceImpl implements FlightService {
 
     @Override
     public FlightDto retrieveFlight(Long id) {
-        if (id == null) throw new RuntimeException("Id cannot be null");
+        if (id == null) throw new NullFlightIdException("Id cannot be null");
         return FlightMapper.toDto(flightRepository.findById(id).orElseThrow(() -> new FlightNotFoundException("Flight was not found!")));
     }
 

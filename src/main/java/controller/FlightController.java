@@ -1,5 +1,6 @@
 package controller;
 
+import model.dto.BookingDto;
 import model.dto.FlightDto;
 import service.FlightService;
 
@@ -40,8 +41,8 @@ public class FlightController {
         flightService.updateFlight(id, updatedFlightDto);
     }
 
-    public void displayOnlineBoard() {
-        flightService.displayOnlineBoard();
+    public List<FlightDto> displayOnlineBoard() {
+        return flightService.displayOnlineBoard();
     }
 
     public FlightDto searchFlight(String destination, LocalDateTime departureTime) {
