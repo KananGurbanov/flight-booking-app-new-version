@@ -1,27 +1,21 @@
-import controller.BookingController;
-import controller.FlightController;
-import dao.repository.impl.BookingPostgresRepository;
+import controller.FlightServlet;
+import dao.repository.FlightRepository;
 import dao.repository.impl.FlightPostgresRepository;
-import model.dto.FlightDto;
-import service.impl.BookingServiceImpl;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
 import service.impl.FlightServiceImpl;
 
-import java.time.LocalDateTime;
-import java.util.List;
 
 public class App {
-    public static void main(String[] args) {
-        FlightPostgresRepository flightRepository = new FlightPostgresRepository();
-        FlightServiceImpl flightService = new FlightServiceImpl(flightRepository);
-        FlightController flightController = new FlightController(flightService);
+    public static void main(String[] args) throws Exception {
+        Server server = new Server(9000);
+        FlightRepository flightRepository = new FlightPostgresRepository();
+        ServletContextHandler handler    = new ServletContextHandler();
+        handler.addServlet(new ServletHolder(new FlightServlet(new FlightServiceImpl(flightRepository))), "/flight/*");
+        server.setHandler(handler);
 
-        BookingPostgresRepository bookingRepository = new BookingPostgresRepository();
-        BookingServiceImpl bookingService = new BookingServiceImpl(bookingRepository, flightRepository);
-        BookingController bookingController = new BookingController(bookingService);
-
-        console.ConsoleApp consoleApp = new console.ConsoleApp(flightController, bookingController);
-        consoleApp.start();
-
-
+        server.start();
+        server.join();
     }
 }

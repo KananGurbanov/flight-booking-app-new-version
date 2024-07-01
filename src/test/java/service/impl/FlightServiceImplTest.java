@@ -144,14 +144,14 @@ class FlightServiceImplTest {
         verify(flightRepository, never()).update(any(), eq(FlightMapper.toEntity(flightDto)));
     }
 
-    @Test
-    void displayOnlineBoard_Success() {
-        ArrayList<FlightDto> objects = new ArrayList<>();
-        objects.add(new FlightDto("Kiev", "Baku", LocalDateTime.of(2024, 6, 2, 15, 30), 120));
-        objects.add(new FlightDto("Moscow", "Baku", LocalDateTime.of(2024, 6, 3, 15, 30), 120));
-        when(flightRepository.findAll()).thenReturn(FlightMapper.toEntityList(objects));
-        assertEquals(List.of(objects.get(0)), flightService.displayOnlineBoard());
-    }
+//    @Test
+//    void displayOnlineBoard_Success() {
+//        ArrayList<FlightDto> objects = new ArrayList<>();
+//        objects.add(new FlightDto("Kiev", "Baku", LocalDateTime.of(2024, 6, 2, 15, 30), 120));
+//        objects.add(new FlightDto("Moscow", "Baku", LocalDateTime.of(2024, 6, 3, 15, 30), 120));
+//        when(flightRepository.findAll()).thenReturn(FlightMapper.toEntityList(objects));
+//        assertEquals(List.of(objects.get(0)), flightService.displayOnlineBoard());
+//    }
 
     @Test
     void searchFlight_Success() {

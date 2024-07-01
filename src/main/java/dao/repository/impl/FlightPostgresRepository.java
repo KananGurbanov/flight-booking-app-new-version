@@ -84,25 +84,29 @@ public class FlightPostgresRepository implements FlightRepository {
     }
     @Override
     public Optional<FlightEntity> findById(Long id) {
-
         String query = "SELECT * FROM flight WHERE id = ?";
 
         try (Connection connection = new PostgresDriver().getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)
-        ) {
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setLong(1, id);
 
-            ResultSet resultSet = preparedStatement.executeQuery();
-            resultSet.next();
-
-            return Optional.of(new FlightEntity(resultSet.getLong("id"), resultSet.getString("origin"), resultSet.getString("destination"), resultSet.getTimestamp("departure_time").toLocalDateTime(), resultSet.getInt("available_seats")));
-
-
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    FlightEntity flightEntity = new FlightEntity(
+                            resultSet.getLong("id"),
+                            resultSet.getString("origin"),
+                            resultSet.getString("destination"),
+                            resultSet.getTimestamp("departure_time").toLocalDateTime(),
+                            resultSet.getInt("available_seats")
+                    );
+                    return Optional.of(flightEntity);
+                } else {
+                    return Optional.empty();
+                }
+            }
         } catch (SQLException e) {
             throw new RuntimeException("Error retrieving flight data", e);
         }
-
-
     }
     @Override
     public void delete(FlightEntity flight) {

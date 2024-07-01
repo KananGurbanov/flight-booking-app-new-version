@@ -1,5 +1,7 @@
 package model.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -21,12 +23,15 @@ public class FlightDto {
         this.availableSeats = Objects.requireNonNull(availableSeats, "Number of seats cannot be null");
     }
 
-    public FlightDto(Long id, String origin, String destination, LocalDateTime departureTime, Integer availableSeats) {
+    public FlightDto(Long id, String origin, String destination, @JsonFormat(pattern = "yyyy/MM/dd HH:mm") LocalDateTime departureTime, Integer availableSeats) {
         this.id = id;
         this.origin = origin;
         this.destination = destination;
         this.departureTime = departureTime;
         this.availableSeats = availableSeats;
+    }
+
+    public FlightDto() {
     }
 
     public Long getId() {
