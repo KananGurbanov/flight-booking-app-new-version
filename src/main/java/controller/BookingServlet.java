@@ -2,7 +2,9 @@ package controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import exceptions.BookingNotFoundException;
 import exceptions.FlightNotFoundException;
+import exceptions.NullBookingIdException;
 import exceptions.NullFlightException;
 import model.dto.BookingDto;
 import model.dto.FlightDto;
@@ -19,9 +21,10 @@ public class BookingServlet extends HttpServlet {
     private final ObjectMapper mapper;
     private final BookingService bookingService;
 
-    public BookingServlet( BookingService bookingService) {
+    public BookingServlet(BookingService bookingService) {
         this.mapper = new ObjectMapper();
         this.bookingService = bookingService;
+        this.mapper.registerModule(new JavaTimeModule());
 
     }
 
@@ -29,48 +32,51 @@ public class BookingServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String pathInfo = req.getPathInfo();
-      try {
-          if (pathInfo==null || pathInfo.equals("/")){
-              List<BookingDto> bookingDtos=bookingService.retrieveAllBookings();
-              resp.setContentType("application/json");
-              resp.setCharacterEncoding("UTF-8");
-              mapper.writeValue(resp.getWriter(),bookingDtos);
-          } else if (pathInfo.equals("/search")) {
-              List<BookingDto> bookings =bookingService.retrieveAllBookings();
-              resp.setContentType("application/json");
-              resp.setCharacterEncoding("UTF-8");
-              mapper.writeValue(resp.getWriter(),bookings);
-          }
-          else {
-              String idStr = pathInfo.substring(1);
-              Long id = Long.parseLong(idStr);
-             BookingDto bookingDto = bookingService.retrieveBooking(id);
-              resp.setContentType("application/json");
-              resp.setCharacterEncoding("UTF-8");
-              mapper.writeValue(resp.getWriter(), bookingDto);
-          }
+        try {
+            if (pathInfo == null || pathInfo.equals("/")) {
+                List<BookingDto> bookingDtos = bookingService.retrieveAllBookings();
+                resp.setContentType("application/json");
+                resp.setCharacterEncoding("UTF-8");
+                mapper.writeValue(resp.getWriter(), bookingDtos);
+            } else if (pathInfo.equals("/search")) {
+                List<BookingDto> bookings = bookingService.retrieveAllBookings();
+                resp.setContentType("application/json");
+                resp.setCharacterEncoding("UTF-8");
+                mapper.writeValue(resp.getWriter(), bookings);
+            } else {
+                String idStr = pathInfo.substring(1);
+                Long id = Long.parseLong(idStr);
+                BookingDto bookingDto = bookingService.retrieveBooking(id);
+                resp.setContentType("application/json");
+                resp.setCharacterEncoding("UTF-8");
+                mapper.writeValue(resp.getWriter(), bookingDto);
+            }
 
-      } catch (IOException e) {
-          throw new ServletException(e);
-      } catch (NumberFormatException e) {
-          throw new RuntimeException(e);
-      }
+        } catch (NumberFormatException e) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid id format");
+        } catch (IOException e) {
+            resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error processing request");
+        } catch (BookingNotFoundException e) {
+            resp.sendError(HttpServletResponse.SC_NOT_FOUND, e.getMessage());
+        } catch (Exception e) {
+            resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Unexpected error occurred");
+        }
 
 
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-       try {
-           BookingDto bookingDto = mapper.readValue(req.getReader(), BookingDto.class);
-           bookingService.bookFlight(bookingDto);
-           resp.setStatus(HttpServletResponse.SC_OK);
+        try {
+            BookingDto bookingDto = mapper.readValue(req.getReader(), BookingDto.class);
+            bookingService.bookFlight(bookingDto);
+            resp.setStatus(HttpServletResponse.SC_OK);
 
-       } catch (IOException e) {
-           throw new ServletException(e);
-       } catch (NumberFormatException e) {
-           throw new RuntimeException(e);
-       }
+        } catch (IOException e) {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST, "Error reading request data");
+        } catch (NumberFormatException e) {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST, "Invalid id format");
+        }
     }
 
     @Override
@@ -85,11 +91,11 @@ public class BookingServlet extends HttpServlet {
         try {
             Long id = Long.parseLong(idStr);
             BookingDto bookingDto = mapper.readValue(req.getReader(), BookingDto.class);
-          bookingService.updateBooking(id, bookingDto);
-          resp.setStatus(HttpServletResponse.SC_OK);
-        }catch (NumberFormatException e) {
+            bookingService.updateBooking(id, bookingDto);
+            resp.setStatus(HttpServletResponse.SC_OK);
+        } catch (NumberFormatException e) {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid id format");
-        } catch (FlightNotFoundException | NullFlightException e) {
+        } catch (BookingNotFoundException | NullBookingIdException e) {
             resp.sendError(HttpServletResponse.SC_NOT_FOUND, e.getMessage());
         }
     }
@@ -99,7 +105,6 @@ public class BookingServlet extends HttpServlet {
         String pathInfo = req.getPathInfo();
         if (pathInfo == null || pathInfo.equals("/")) {
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing id");
-
         }
         String idStr = pathInfo.substring(1);
         try {
@@ -107,7 +112,11 @@ public class BookingServlet extends HttpServlet {
             bookingService.cancelBooking(id);
             resp.setStatus(HttpServletResponse.SC_OK);
         } catch (NumberFormatException e) {
-            throw new RuntimeException(e);
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid id format");
+        } catch (BookingNotFoundException e) {
+            resp.sendError(HttpServletResponse.SC_NOT_FOUND, e.getMessage());
+        } catch (Exception e) {
+            resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Unexpected error occurred");
         }
     }
 }
