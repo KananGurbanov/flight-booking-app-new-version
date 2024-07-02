@@ -42,7 +42,7 @@ public class BookingServlet extends HttpServlet {
               mapper.writeValue(resp.getWriter(),bookings);
           }
           else {
-              String idStr = pathInfo.substring(1); // remove the leading '/'
+              String idStr = pathInfo.substring(1);
               Long id = Long.parseLong(idStr);
              BookingDto bookingDto = bookingService.retrieveBooking(id);
               resp.setContentType("application/json");
