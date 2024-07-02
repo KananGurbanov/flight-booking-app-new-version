@@ -18,7 +18,7 @@ public class App {
         BookingRepository bookingRepository=new BookingPostgresRepository();
         ServletContextHandler handler    = new ServletContextHandler();
         handler.addServlet(new ServletHolder(new FlightServlet(new FlightServiceImpl(flightRepository))), "/flight/*");
-        handler.addServlet(new ServletHolder(new BookingServlet(new BookingServiceImpl(bookingRepository))), "/booking/*");
+        handler.addServlet(new ServletHolder(new BookingServlet(new BookingServiceImpl(bookingRepository, flightRepository))), "/booking/*");
 
         server.setHandler(handler);
 

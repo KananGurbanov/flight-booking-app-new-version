@@ -13,7 +13,6 @@ import java.util.List;
 
 public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
-
     private final FlightRepository flightRepository;
 
     public BookingServiceImpl(BookingRepository bookingRepository, FlightRepository flightRepository) {
