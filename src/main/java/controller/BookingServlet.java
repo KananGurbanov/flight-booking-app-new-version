@@ -26,14 +26,15 @@ public class BookingServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String pathInfo = req.getPathInfo();
+        String fullName = req.getParameter("fullName");
         try {
             if (pathInfo == null || pathInfo.equals("/")) {
                 List<BookingDto> bookingDtos = bookingService.retrieveAllBookings();
                 resp.setContentType("application/json");
                 resp.setCharacterEncoding("UTF-8");
                 mapper.writeValue(resp.getWriter(), bookingDtos);
-            } else if (pathInfo.equals("/search")) {
-                List<BookingDto> bookings = bookingService.retrieveAllBookings();
+            } else if (pathInfo.equals("/search") && fullName != null) {
+                List<BookingDto> bookings = bookingService.retrieveBookingsByName(fullName);
                 resp.setContentType("application/json");
                 resp.setCharacterEncoding("UTF-8");
                 mapper.writeValue(resp.getWriter(), bookings);
