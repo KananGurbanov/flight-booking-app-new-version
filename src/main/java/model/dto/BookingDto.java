@@ -15,6 +15,9 @@ public class BookingDto {
     private List<Passenger> passengers;
 
 
+     public BookingDto() {
+
+     }
     public BookingDto(Long id, Long flightId, List<Passenger> passengers) {
         this.id = id;
         this.flightId = flightId;
