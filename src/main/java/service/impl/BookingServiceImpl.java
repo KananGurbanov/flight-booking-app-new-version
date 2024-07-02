@@ -3,6 +3,7 @@ package service.impl;
 import dao.entity.BookingEntity;
 import dao.repository.BookingRepository;
 import dao.repository.FlightRepository;
+import dao.repository.impl.FlightPostgresRepository;
 import exceptions.*;
 import mapper.BookingMapper;
 import mapper.FlightMapper;
@@ -15,10 +16,12 @@ public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
     private final FlightRepository flightRepository;
 
-    public BookingServiceImpl(BookingRepository bookingRepository, FlightRepository flightRepository) {
+    public BookingServiceImpl(BookingRepository bookingRepository,FlightRepository flightRepository) {
         this.bookingRepository = bookingRepository;
-        this.flightRepository = flightRepository;
+        this.flightRepository =flightRepository;
     }
+
+
 
     @Override
     public void bookFlight(BookingDto bookingDto) {
