@@ -5,7 +5,7 @@ import dao.entity.BookingEntity;
 import java.util.List;
 import java.util.Optional;
 
-public interface BookingRepository {
+public interface BookingRepository extends Repository<BookingEntity> {
     void save(BookingEntity booking);
 
     void delete(BookingEntity booking);
@@ -15,7 +15,4 @@ public interface BookingRepository {
     Optional<BookingEntity> findById(Long id);
 
     void update(Long id, BookingEntity updatedBooking);
-
-    //boolean existById(BookingEntity booking);
-
 }

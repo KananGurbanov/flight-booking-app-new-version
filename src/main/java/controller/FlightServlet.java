@@ -49,7 +49,7 @@ public class FlightServlet extends HttpServlet {
                 List<FlightDto> flights = flightService.displayOnlineBoard();
                 resp.setContentType("application/json");
                 resp.setCharacterEncoding("UTF-8");
-                objectMapper.   writeValue(resp.getWriter(), flights);
+                objectMapper.writeValue(resp.getWriter(), flights);
             } else {
                 String idStr = pathInfo.substring(1); // remove the leading '/'
                 Long id = Long.parseLong(idStr);
