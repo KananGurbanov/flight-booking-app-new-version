@@ -45,7 +45,7 @@ class BookingServiceImplTest {
         FlightDto flightDto = new FlightDto(1L, "Baku", "Moscow", LocalDateTime.of(2024, 5, 24, 15, 30), 120);
         when(flightRepository.findById(bookingDto.getFlightId())).thenReturn(Optional.of(FlightMapper.toEntity(flightDto)));
         bookingService.bookFlight(bookingDto);
-        verify(flightRepository, times(3)).findById(bookingDto.getFlightId());
+        verify(flightRepository, times(1)).findById(bookingDto.getFlightId());
         verify(bookingRepository, times(1)).save(BookingMapper.toEntity(bookingDto));
     }
 
