@@ -11,5 +11,5 @@ public class Constants {
     public static final String BOOKING_FILE = "src/main/java/resources/dbInFile/flights.bin";
     public static final String URL = "jdbc:postgresql://localhost:5433/smth";
     public static final String USERNAME = "postgres";
-    public static final String PASSWORD = "2004";
+    public static final String PASSWORD = "postgres";
 }

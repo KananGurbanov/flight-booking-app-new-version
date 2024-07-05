@@ -31,9 +31,13 @@ public class BookingServiceImpl implements BookingService {
     public void bookFlight(BookingDto bookingDto) {
         if (bookingDto == null) throw new NullBookingException("Booking cannot be null!");
         FlightEntity flightEntity = flightRepository.findById(bookingDto.getFlightId()).orElseThrow(() -> new FlightNotFoundException("Flight not found!"));
+
         log.info("Booked flight {}", flightEntity);
         bookingRepository.save(BookingMapper.toEntity(bookingDto));
         log.info("Booking saved!");
+
+        bookingRepository.save(BookingMapper.toEntity(bookingDto));
+
         flightEntity.setAvailableSeats(flightEntity.getAvailableSeats() - bookingDto.getPassengers().size());
         flightRepository.update(flightEntity.getId(), flightEntity);
     }
@@ -48,6 +52,8 @@ public class BookingServiceImpl implements BookingService {
     public BookingDto retrieveBooking(Long id) {
         if (id == null) throw new NullBookingIdException("Booking id cannot be null!");
         BookingEntity bookingEntity = bookingRepository.
+        return BookingMapper.toDto(bookingRepository.
+
                 findById(id).
                 orElseThrow(() -> new BookingNotFoundException("Booking not found!"));
         log.info("Booking retrieved {}", bookingEntity);
@@ -64,7 +70,9 @@ public class BookingServiceImpl implements BookingService {
                 orElseThrow(() -> new BookingNotFoundException("Booking not found!"));
         log.info("Booking to cancel {}", bookingEntity);
         bookingRepository.delete(bookingEntity);
+
         log.info("Booking deleted!");
+
         FlightEntity flightEntity = flightRepository.findById(bookingEntity.getFlightId()).get();
         flightEntity.setAvailableSeats(flightEntity.getAvailableSeats() + bookingEntity.getPassengers().size());
         flightRepository.update(flightEntity.getId(), flightEntity);
